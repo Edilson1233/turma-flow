@@ -1,0 +1,419 @@
+/* ============================================================
+   style.css — TurmaApp — Estilos Completos
+   ============================================================ */
+
+/* --- Reset e Variáveis --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --cor-primaria:    #4A90D9;
+    --cor-primaria-dk: #2c6fab;
+    --cor-admin:       #E67E22;
+    --cor-success:     #27AE60;
+    --cor-urgente:     #E74C3C;
+    --cor-critico:     #C0392B;
+    --cor-fundo:       #F0F3F7;
+    --cor-card:        #FFFFFF;
+    --cor-borda:       #E0E6ED;
+    --cor-texto:       #2C3E50;
+    --cor-texto-suave: #7F8C8D;
+    --sombra-sm:       0 1px 4px rgba(0,0,0,0.08);
+    --sombra:          0 4px 16px rgba(0,0,0,0.10);
+    --sombra-lg:       0 8px 32px rgba(0,0,0,0.14);
+    --radius:          10px;
+    --radius-sm:       6px;
+    --transition:      0.2s ease;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--cor-fundo);
+    color: var(--cor-texto);
+    line-height: 1.65;
+    min-height: 100vh;
+}
+
+/* ============================================================
+   LAYOUT GLOBAL
+   ============================================================ */
+.container    { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; }
+.card-secao   {
+    background: var(--cor-card); border-radius: var(--radius);
+    padding: 1.5rem; margin-top: 1.5rem;
+    box-shadow: var(--sombra-sm);
+    border: 1px solid var(--cor-borda);
+}
+.section-header {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 1.4rem;
+    flex-wrap: wrap; gap: 0.8rem;
+}
+.section-header h2 { font-size: 1.15rem; font-weight: 700; }
+
+/* ============================================================
+   HEADER / NAVBAR
+   ============================================================ */
+.app-header {
+    background: linear-gradient(135deg, #2c6fab 0%, var(--cor-primaria) 100%);
+    color: white;
+    padding: 0.85rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    box-shadow: 0 2px 12px rgba(44, 111, 171, 0.35);
+    position: sticky; top: 0; z-index: 100;
+}
+.header-info  { display: flex; align-items: center; gap: 0.8rem; }
+.header-back  {
+    color: rgba(255,255,255,0.8); text-decoration: none;
+    font-size: 1.3rem; transition: color var(--transition);
+    padding: 0.2rem 0.5rem;
+}
+.header-back:hover { color: white; }
+
+.app-header h1    { font-size: 1.1rem; font-weight: 700; line-height: 1.2; }
+.codigo-turma     { font-size: 0.78rem; opacity: 0.8; }
+.codigo-turma strong { font-family: monospace; background: rgba(255,255,255,0.15); padding: 0.1rem 0.4rem; border-radius: 4px; }
+
+.app-header nav   { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
+.app-header nav a {
+    color: rgba(255,255,255,0.85); text-decoration: none;
+    padding: 0.35rem 0.8rem; border-radius: var(--radius-sm);
+    font-size: 0.85rem; transition: background var(--transition), color var(--transition);
+    white-space: nowrap;
+}
+.app-header nav a:hover, .app-header nav a.nav-active {
+    background: rgba(255,255,255,0.2); color: white;
+}
+.nav-logout { color: rgba(255,255,255,0.6) !important; font-size: 0.8rem !important; }
+.nav-logout:hover { color: white !important; background: rgba(255,0,0,0.2) !important; }
+
+/* ============================================================
+   BADGE DE ROLE
+   ============================================================ */
+.badge-role {
+    padding: 0.25rem 0.7rem; border-radius: 20px;
+    font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+}
+.badge-admin   { background: rgba(230,126,34,0.2); color: #E67E22; border: 1px solid rgba(230,126,34,0.4); }
+.badge-student { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
+
+/* ============================================================
+   FLASH MESSAGES
+   ============================================================ */
+.flash {
+    padding: 0.9rem 1.2rem; margin: 0 auto; max-width: 1100px;
+    margin-top: 0.8rem; border-radius: var(--radius);
+    font-size: 0.9rem; position: relative;
+    display: flex; align-items: flex-start; gap: 0.5rem;
+    flex-direction: column;
+}
+.flash p { margin: 0; }
+.flash-sucesso { background: #EAFAF1; border-left: 4px solid var(--cor-success);  color: #1D6A3A; }
+.flash-erro    { background: #FDEDEC; border-left: 4px solid var(--cor-urgente);  color: #922B21; }
+.flash-info    { background: #EBF5FB; border-left: 4px solid var(--cor-primaria); color: #1A5276; }
+.flash-fechar {
+    position: absolute; top: 0.5rem; right: 0.8rem;
+    background: none; border: none; cursor: pointer;
+    font-size: 1.1rem; opacity: 0.5; line-height: 1;
+}
+.flash-fechar:hover { opacity: 1; }
+
+/* ============================================================
+   BOTÕES
+   ============================================================ */
+.btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem;
+    padding: 0.5rem 1.2rem; border-radius: var(--radius-sm);
+    text-decoration: none; font-size: 0.9rem; font-weight: 500;
+    cursor: pointer; border: none; transition: all var(--transition);
+    white-space: nowrap;
+}
+.btn:hover           { transform: translateY(-1px); box-shadow: var(--sombra-sm); }
+.btn:active          { transform: translateY(0); }
+.btn-primary         { background: var(--cor-primaria); color: white; }
+.btn-primary:hover   { background: var(--cor-primaria-dk); }
+.btn-secondary       { background: #ECF0F1; color: var(--cor-texto); border: 1px solid var(--cor-borda); }
+.btn-secondary:hover { background: #DFE6E9; }
+.btn-danger          { background: var(--cor-urgente); color: white; }
+.btn-danger:hover    { background: var(--cor-critico); }
+.btn-sm              { padding: 0.3rem 0.75rem; font-size: 0.8rem; }
+.btn-full            { width: 100%; }
+.btn-mini            {
+    padding: 0.15rem 0.4rem; font-size: 0.75rem; border-radius: 4px;
+    text-decoration: none; cursor: pointer; border: none; background: rgba(0,0,0,0.15);
+    color: white; transition: background var(--transition);
+}
+.btn-mini:hover      { background: rgba(0,0,0,0.3); }
+
+/* ============================================================
+   FORMULÁRIOS
+   ============================================================ */
+.form-group        { margin-bottom: 1.1rem; }
+.form-group label  { display: block; font-weight: 600; font-size: 0.875rem; margin-bottom: 0.4rem; color: var(--cor-texto); }
+.form-group small  { font-weight: 400; color: var(--cor-texto-suave); }
+.form-hint         { font-size: 0.78rem; color: var(--cor-texto-suave); margin-top: 0.3rem; }
+.obrigatorio       { color: var(--cor-urgente); }
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="url"],
+input[type="date"],
+input[type="time"],
+input[type="color"],
+select,
+textarea {
+    width: 100%; padding: 0.6rem 0.85rem;
+    border: 1.5px solid var(--cor-borda); border-radius: var(--radius-sm);
+    font-size: 0.9rem; color: var(--cor-texto);
+    background: white; transition: border-color var(--transition), box-shadow var(--transition);
+    font-family: inherit;
+}
+input:focus, select:focus, textarea:focus {
+    outline: none; border-color: var(--cor-primaria);
+    box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.15);
+}
+textarea { resize: vertical; min-height: 100px; }
+
+.form-grid-2       { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-fieldset     { border: 1.5px solid var(--cor-borda); border-radius: var(--radius); padding: 1rem 1.2rem; margin-bottom: 1.2rem; }
+.form-fieldset legend { font-weight: 700; font-size: 0.9rem; padding: 0 0.5rem; color: var(--cor-primaria); }
+.form-acoes        { display: flex; gap: 0.8rem; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--cor-borda); }
+.form-gerir        { }
+.form-inline-codigo { display: flex; gap: 0.8rem; align-items: flex-end; flex-wrap: wrap; }
+.form-inline-codigo input { max-width: 180px; }
+.form-material     { }
+
+@media (max-width: 600px) {
+    .form-grid-2 { grid-template-columns: 1fr; }
+    .form-acoes  { flex-direction: column-reverse; }
+    .form-acoes .btn { width: 100%; }
+}
+
+/* ============================================================
+   AUTH PAGES (Login / Registo)
+   ============================================================ */
+.body-auth         { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1rem; background: linear-gradient(135deg, #1a3a5c 0%, var(--cor-primaria) 100%); }
+.auth-wrapper      { width: 100%; max-width: 440px; }
+.auth-card-wide    { max-width: 680px; }
+.auth-card {
+    background: white; border-radius: 16px;
+    padding: 2.5rem 2rem; box-shadow: var(--sombra-lg);
+}
+.auth-logo         { text-align: center; margin-bottom: 2rem; }
+.auth-logo-icon    { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+.auth-logo h1      { font-size: 1.6rem; color: var(--cor-texto); }
+.auth-logo p       { color: var(--cor-texto-suave); font-size: 0.9rem; margin-top: 0.3rem; }
+.auth-form         { margin-top: 1.5rem; }
+.auth-switch       { text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--cor-borda); }
+.auth-switch p     { color: var(--cor-texto-suave); font-size: 0.875rem; margin-bottom: 0.7rem; }
+
+/* Opções de "criar turma" vs "entrar" */
+.opcao-turma-tabs  { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.2rem; }
+.opcao-tab {
+    display: flex; align-items: center; gap: 0.7rem;
+    padding: 0.9rem; border: 2px solid var(--cor-borda);
+    border-radius: var(--radius); cursor: pointer;
+    transition: all var(--transition);
+}
+.opcao-tab input[type="radio"] { display: none; }
+.opcao-tab-icon    { font-size: 1.5rem; }
+.opcao-tab span    { font-size: 0.85rem; line-height: 1.3; }
+.opcao-tab strong  { display: block; }
+.opcao-tab-active  { border-color: var(--cor-primaria); background: #EBF5FB; }
+.opcao-tab:hover   { border-color: var(--cor-primaria); }
+
+@media (max-width: 500px) {
+    .opcao-turma-tabs { grid-template-columns: 1fr; }
+    .auth-card { padding: 1.5rem 1rem; }
+}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+.dashboard-section { background: var(--cor-card); border-radius: var(--radius); padding: 1.5rem; margin-top: 1.5rem; box-shadow: var(--sombra-sm); border: 1px solid var(--cor-borda); }
+.turmas-grid       { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-top: 0.5rem; }
+.turma-card {
+    border: 2px solid var(--cor-borda); border-radius: var(--radius);
+    padding: 1.2rem; transition: all var(--transition);
+    background: white;
+}
+.turma-card:hover      { border-color: var(--cor-primaria); box-shadow: var(--sombra); transform: translateY(-2px); }
+.turma-card-admin      { border-color: rgba(230, 126, 34, 0.3); background: #FFFBF5; }
+.turma-card-header     { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
+.turma-codigo          { font-family: monospace; font-size: 0.8rem; color: var(--cor-texto-suave); background: #F4F6F9; padding: 0.2rem 0.5rem; border-radius: 4px; }
+.turma-nome            { font-size: 1rem; font-weight: 700; margin-bottom: 0.8rem; line-height: 1.3; }
+.turma-stats           { display: flex; gap: 1rem; font-size: 0.8rem; color: var(--cor-texto-suave); margin-bottom: 1rem; flex-wrap: wrap; }
+.turma-card-acoes      { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.empty-state-card      { text-align: center; padding: 3rem 1rem; color: var(--cor-texto-suave); }
+.empty-state-card h3   { font-size: 1.1rem; margin: 0.8rem 0 0.4rem; color: var(--cor-texto); }
+
+/* ============================================================
+   TABELA DE HORÁRIO
+   ============================================================ */
+.tabela-wrapper   { overflow-x: auto; margin-top: 0.5rem; }
+.tabela-horario   {
+    width: 100%; border-collapse: separate; border-spacing: 5px;
+    min-width: 560px;
+}
+.tabela-horario th {
+    background: #2C3E50; color: white;
+    padding: 0.6rem 0.8rem; text-align: center;
+    border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600;
+}
+.th-hora       { min-width: 70px; background: #1a252f; }
+.th-dia        { min-width: 130px; }
+.th-dia-hoje   { background: var(--cor-primaria) !important; box-shadow: 0 2px 8px rgba(74,144,217,0.4); }
+
+.td-hora {
+    background: #ECF0F1; text-align: center; font-weight: 700;
+    font-size: 0.8rem; padding: 0.5rem 0.3rem;
+    border-radius: var(--radius-sm); color: var(--cor-texto-suave);
+    white-space: nowrap;
+}
+.td-aula       { border-radius: var(--radius-sm); vertical-align: top; padding: 0; min-width: 130px; transition: transform var(--transition); }
+.td-aula.sem-aula { background: rgba(255,255,255,0.5); }
+
+.aula-card {
+    padding: 0.6rem 0.8rem; display: flex; flex-direction: column; gap: 0.2rem;
+    color: white; border-radius: var(--radius-sm); min-height: 80px; height: 100%;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.aula-nome     { font-weight: 700; font-size: 0.88rem; line-height: 1.3; }
+.aula-info     { font-size: 0.72rem; opacity: 0.9; }
+.aula-horas    { font-size: 0.68rem; opacity: 0.75; margin-top: auto; }
+.aula-acoes    { display: flex; gap: 0.2rem; margin-top: 0.3rem; }
+.celula-livre  { display: block; text-align: center; color: #BDC3C7; padding: 1.2rem 0.3rem; font-size: 0.9rem; }
+
+/* ============================================================
+   LISTA DE TAREFAS
+   ============================================================ */
+.lista-tarefas     { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+.tarefa-item {
+    background: white; border: 2px solid var(--cor-borda);
+    border-radius: var(--radius); padding: 1rem 1.2rem;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+.tarefa-item:hover { box-shadow: var(--sombra-sm); }
+
+.tarefa-urgente { border-color: var(--cor-urgente); background: #FFF9F9; }
+.tarefa-critica {
+    border-color: var(--cor-critico); background: #FFF0EE;
+    animation: pulsar 2.5s ease-in-out infinite;
+}
+.tarefa-passada { opacity: 0.55; border-style: dashed; }
+
+@keyframes pulsar {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(192,57,43,0); }
+    50%       { box-shadow: 0 0 0 5px rgba(192,57,43,0.15); }
+}
+
+.tarefa-header     { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
+.tarefa-badge      {
+    font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.7rem;
+    border-radius: 20px; white-space: nowrap;
+}
+.tarefa-badge-tpc     { background: #EBF5FB; color: #1A5276; }
+.tarefa-badge-teste   { background: #FEF9E7; color: #7D6608; }
+.tarefa-badge-exame   { background: #F5EEF8; color: #6C3483; }
+.tarefa-badge-projeto { background: #E9F7EF; color: #1D6A3A; }
+
+.tarefa-titulo     { font-size: 1rem; font-weight: 700; flex: 1; }
+.tarefa-descricao  { color: var(--cor-texto-suave); font-size: 0.875rem; margin: 0.5rem 0; line-height: 1.5; }
+.tarefa-footer     { display: flex; justify-content: space-between; align-items: center; margin-top: 0.6rem; flex-wrap: wrap; gap: 0.5rem; }
+.tarefa-meta       { display: flex; flex-direction: column; gap: 0.1rem; }
+.tarefa-data       { font-size: 0.85rem; color: var(--cor-texto-suave); }
+.tarefa-autor      { font-size: 0.75rem; color: var(--cor-texto-suave); opacity: 0.7; }
+.tarefa-acoes      { display: flex; gap: 0.4rem; }
+
+.badge             { display: inline-flex; align-items: center; gap: 0.2rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+.badge-urgente     { background: #FDECEA; color: var(--cor-urgente); }
+.badge-critico     { background: var(--cor-urgente); color: white; }
+.badge-passada     { background: #EAFAF1; color: var(--cor-success); }
+
+
+
+/* ============================================================
+   MATERIAIS
+   ============================================================ */
+.materiais-grupo         { margin-bottom: 2rem; }
+.materiais-grupo-titulo  { font-size: 1rem; font-weight: 700; color: var(--cor-texto-suave); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--cor-borda); }
+.materiais-count         { font-size: 0.78rem; background: var(--cor-fundo); padding: 0.1rem 0.5rem; border-radius: 10px; font-weight: 400; }
+.materiais-grid          { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem; }
+
+.material-card {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    border: 1.5px solid var(--cor-borda); border-radius: var(--radius);
+    padding: 1rem; background: white; transition: all var(--transition);
+    gap: 0.8rem;
+}
+.material-card:hover      { border-color: var(--cor-primaria); box-shadow: var(--sombra-sm); transform: translateY(-1px); }
+.material-card-corpo      { flex: 1; min-width: 0; }
+.material-titulo          { font-weight: 700; font-size: 0.9rem; color: var(--cor-primaria); text-decoration: none; display: flex; align-items: center; gap: 0.3rem; word-break: break-word; }
+.material-titulo:hover    { text-decoration: underline; }
+.material-ext-icon        { font-size: 0.75rem; opacity: 0.6; }
+.material-descricao       { font-size: 0.8rem; color: var(--cor-texto-suave); margin: 0.3rem 0; }
+.material-meta            { font-size: 0.72rem; color: var(--cor-texto-suave); opacity: 0.7; margin-top: 0.4rem; }
+.material-card-acoes      { flex-shrink: 0; }
+
+/* ============================================================
+   FORMULÁRIO GERIR (horário/tarefa)
+   ============================================================ */
+/* Seletor de cor */
+.cor-picker        { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.3rem; }
+.cor-opcao         { cursor: pointer; }
+.cor-opcao input   { display: none; }
+.cor-circulo       { width: 28px; height: 28px; border-radius: 50%; display: block; border: 3px solid transparent; transition: transform var(--transition), border-color var(--transition); }
+.cor-opcao input:checked + .cor-circulo { border-color: var(--cor-texto); transform: scale(1.2); }
+.cor-circulo:hover { transform: scale(1.1); }
+.cor-custom-wrap   { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--cor-texto-suave); }
+.cor-custom-wrap input[type="color"] { width: 36px; height: 36px; padding: 2px; border-radius: 50%; cursor: pointer; }
+
+/* Seletor de tipo de tarefa */
+.tipo-grid         { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+.tipo-opcao {
+    display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+    padding: 0.9rem 0.5rem; border: 2px solid var(--cor-borda);
+    border-radius: var(--radius); cursor: pointer; text-align: center;
+    font-size: 0.82rem; transition: all var(--transition);
+}
+.tipo-opcao input   { display: none; }
+.tipo-icon          { font-size: 1.4rem; }
+.tipo-opcao-active  { border-color: var(--cor-primaria); background: #EBF5FB; color: var(--cor-primaria); }
+.tipo-opcao:hover   { border-color: var(--cor-primaria); }
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+.empty-state       { text-align: center; padding: 3rem 1rem; color: var(--cor-texto-suave); }
+.empty-state h3    { color: var(--cor-texto); font-size: 1.1rem; margin: 0.5rem 0 0.3rem; }
+.empty-state p     { font-size: 0.9rem; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.app-footer {
+    text-align: center; padding: 2rem 1rem;
+    color: var(--cor-texto-suave); font-size: 0.8rem;
+    margin-top: 3rem; border-top: 1px solid var(--cor-borda);
+}
+
+/* ============================================================
+   RESPONSIVO
+   ============================================================ */
+@media (max-width: 768px) {
+    .app-header { padding: 0.7rem 1rem; }
+    .container  { padding: 1rem 0.75rem; }
+    .card-secao { padding: 1rem; }
+    .turmas-grid { grid-template-columns: 1fr; }
+    .materiais-grid { grid-template-columns: 1fr; }
+    .tipo-grid  { grid-template-columns: repeat(4, 1fr); }
+    .tabela-horario { min-width: 480px; }
+}
+@media (max-width: 480px) {
+    .tipo-grid { grid-template-columns: repeat(2, 1fr); }
+    .tarefa-footer { flex-direction: column; align-items: flex-start; }
+}

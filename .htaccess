@@ -1,0 +1,56 @@
+# ============================================================
+#  .htaccess — TurmaFlow (raiz do projeto)
+#  Segurança, Performance e Forçar HTTPS
+# ============================================================
+
+# --- 1. FORÇAR HTTPS (O CADEADO VERDE) ---
+RewriteEngine On
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# --- 2. Habilita o motor de reescrita e esconde pastas ---
+Options -Indexes
+ServerSignature Off
+
+# --- 3. Bloqueia acesso direto a ficheiros sensíveis (como o schema.sql) ---
+<FilesMatch "\.(sql|log|env|md|json|lock|sh)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Bloqueia acesso direto ao setup.php em produção
+<Files "setup.php">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# --- 4. Cabeçalhos de segurança básicos ---
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# --- 5. Cache para assets estáticos (Deixa o site muito mais rápido) ---
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css             "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType image/png            "access plus 1 month"
+    ExpiresByType image/jpg            "access plus 1 month"
+    ExpiresByType image/jpeg           "access plus 1 month"
+    ExpiresByType image/gif            "access plus 1 month"
+    ExpiresByType image/x-icon         "access plus 1 year"
+</IfModule>
+
+# --- 6. Compressão GZIP (reduz tamanho das respostas) ---
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript text/plain
+</IfModule>
+
+# --- 7. Página de erro personalizada (Redireciona para o erro.php) ---
+ErrorDocument 403 /pages/erro.php?codigo=403
+ErrorDocument 404 /pages/erro.php?codigo=404
+ErrorDocument 500 /pages/erro.php?codigo=500
