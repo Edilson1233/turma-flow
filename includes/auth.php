@@ -90,6 +90,180 @@ function loginUser(string $email, string $password): bool {
 }
 
 // ============================================================
+//  FUNCOES DE CSRF
+// ============================================================
+function csrfToken(): string {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+
+    return $_SESSION['csrf_token'];
+}
+
+function verifyCsrfToken(?string $token): bool {
+    return is_string($token)
+        && !empty($_SESSION['csrf_token'])
+        && hash_equals($_SESSION['csrf_token'], $token);
+}
+
+// ============================================================
+//  FUNCOES DE RECUPERACAO DE PASSWORD
+// ============================================================
+function ensurePasswordResetsTable(): void {
+    $db = getDB();
+    $db->exec("
+        CREATE TABLE IF NOT EXISTS password_resets (
+            id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            user_id INT UNSIGNED NOT NULL,
+            token_hash CHAR(64) NOT NULL UNIQUE,
+            expires_at DATETIME NOT NULL,
+            used_at DATETIME NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            ip_address VARCHAR(45) NULL,
+            user_agent VARCHAR(255) NULL,
+            INDEX idx_password_resets_user_created (user_id, created_at),
+            INDEX idx_password_resets_token_active (token_hash, used_at, expires_at),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    ");
+}
+
+function findUserByEmail(string $email): ?array {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT id, nome, email, password FROM users WHERE LOWER(email) = LOWER(?) LIMIT 1");
+    $stmt->execute([$email]);
+    $user = $stmt->fetch();
+
+    return $user ?: null;
+}
+
+function canCreatePasswordReset(int $userId): bool {
+    ensurePasswordResetsTable();
+
+    $db = getDB();
+    $stmt = $db->prepare("
+        SELECT created_at
+        FROM password_resets
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        LIMIT 1
+    ");
+    $stmt->execute([$userId]);
+    $lastCreatedAt = $stmt->fetchColumn();
+
+    if (!$lastCreatedAt) {
+        return true;
+    }
+
+    return strtotime((string) $lastCreatedAt) <= time() - 60;
+}
+
+function createPasswordResetToken(int $userId): string {
+    ensurePasswordResetsTable();
+
+    $db = getDB();
+    $token = bin2hex(random_bytes(32));
+    $tokenHash = hash('sha256', $token);
+    $expiresAt = date('Y-m-d H:i:s', time() + 30 * 60);
+    $ipAddress = substr($_SERVER['REMOTE_ADDR'] ?? '', 0, 45);
+    $userAgent = substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 255);
+
+    $db->beginTransaction();
+    try {
+        $stmt = $db->prepare("
+            UPDATE password_resets
+            SET used_at = NOW()
+            WHERE user_id = ? AND used_at IS NULL
+        ");
+        $stmt->execute([$userId]);
+
+        $stmt = $db->prepare("
+            INSERT INTO password_resets (user_id, token_hash, expires_at, ip_address, user_agent)
+            VALUES (?, ?, ?, ?, ?)
+        ");
+        $stmt->execute([$userId, $tokenHash, $expiresAt, $ipAddress, $userAgent]);
+
+        $db->commit();
+    } catch (Exception $e) {
+        $db->rollBack();
+        throw $e;
+    }
+
+    return $token;
+}
+
+function getPasswordResetByToken(string $token): ?array {
+    if (!preg_match('/^[a-f0-9]{64}$/i', $token)) {
+        return null;
+    }
+
+    ensurePasswordResetsTable();
+
+    $db = getDB();
+    $stmt = $db->prepare("
+        SELECT pr.id, pr.user_id, pr.expires_at, u.nome, u.email, u.password
+        FROM password_resets pr
+        JOIN users u ON u.id = pr.user_id
+        WHERE pr.token_hash = ?
+          AND pr.used_at IS NULL
+          AND pr.expires_at > NOW()
+        LIMIT 1
+    ");
+    $stmt->execute([hash('sha256', $token)]);
+    $reset = $stmt->fetch();
+
+    return $reset ?: null;
+}
+
+function markPasswordResetUsed(int $resetId): void {
+    $db = getDB();
+    $stmt = $db->prepare("UPDATE password_resets SET used_at = NOW() WHERE id = ?");
+    $stmt->execute([$resetId]);
+}
+
+function updateUserPasswordFromReset(int $userId, string $password, int $resetId): void {
+    $db = getDB();
+    $hash = password_hash($password, PASSWORD_DEFAULT);
+
+    $db->beginTransaction();
+    try {
+        $stmt = $db->prepare("UPDATE users SET password = ? WHERE id = ?");
+        $stmt->execute([$hash, $userId]);
+
+        markPasswordResetUsed($resetId);
+
+        $stmt = $db->prepare("
+            UPDATE password_resets
+            SET used_at = NOW()
+            WHERE user_id = ? AND used_at IS NULL
+        ");
+        $stmt->execute([$userId]);
+
+        $db->commit();
+    } catch (Exception $e) {
+        $db->rollBack();
+        throw $e;
+    }
+}
+
+function sendPasswordResetEmail(string $email, string $nome, string $token): bool {
+    $resetUrl = BASE_URL . '/pages/recuperar_senha.php?token=' . urlencode($token);
+    $subject = 'Recuperar password - TurmaFlow';
+    $message = "Olá {$nome},\n\n";
+    $message .= "Recebemos um pedido para alterar a password da tua conta TurmaFlow.\n";
+    $message .= "Usa este link nos próximos 30 minutos:\n{$resetUrl}\n\n";
+    $message .= "Se não foste tu, podes ignorar este email.\n";
+    $headers = [
+        'From: TurmaFlow <no-reply@turmaflow.local>',
+        'Reply-To: no-reply@turmaflow.local',
+        'Content-Type: text/plain; charset=UTF-8',
+        'X-Mailer: PHP/' . phpversion(),
+    ];
+
+    return @mail($email, $subject, $message, implode("\r\n", $headers));
+}
+
+// ============================================================
 //  FUNÇÃO: logoutUser()
 //  CORREÇÃO: Agora usa BASE_URL
 // ============================================================

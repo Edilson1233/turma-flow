@@ -1,0 +1,10 @@
+.env
+.env.*
+*.log
+*.sql
+vendor/
+node_modules/
+.DS_Store
+Thumbs.db
+uploads/
+cache/

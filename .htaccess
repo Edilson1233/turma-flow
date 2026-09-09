@@ -5,6 +5,7 @@
 
 # --- 1. FORÇAR HTTPS (O CADEADO VERDE) ---
 RewriteEngine On
+RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1|\[::1\])(:[0-9]+)?$ [NC]
 RewriteCond %{HTTP:X-Forwarded-Proto} !https
 RewriteCond %{HTTPS} off
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
@@ -19,10 +20,16 @@ ServerSignature Off
     Deny from all
 </FilesMatch>
 
-# Bloqueia acesso direto ao setup.php em produção
+# Permite o setup.php apenas em localhost
 <Files "setup.php">
-    Order Allow,Deny
-    Deny from all
+    <IfModule mod_authz_core.c>
+        Require local
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Deny,Allow
+        Deny from all
+        Allow from 127.0.0.1 ::1 localhost
+    </IfModule>
 </Files>
 
 # --- 4. Cabeçalhos de segurança básicos ---

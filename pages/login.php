@@ -102,6 +102,10 @@ $flash = function_exists('getFlash') ? getFlash() : null;
                        required>
             </div>
 
+            <div class="auth-help">
+                <a href="recuperar_senha.php">Esqueceste-te da password?</a>
+            </div>
+
             <button type="submit" class="btn btn-primary btn-full">
                 Entrar →
             </button>

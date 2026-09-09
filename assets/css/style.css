@@ -208,6 +208,9 @@ textarea { resize: vertical; min-height: 100px; }
 .auth-logo h1      { font-size: 1.6rem; color: var(--cor-texto); }
 .auth-logo p       { color: var(--cor-texto-suave); font-size: 0.9rem; margin-top: 0.3rem; }
 .auth-form         { margin-top: 1.5rem; }
+.auth-help         { text-align: right; margin: -0.3rem 0 1rem; font-size: 0.85rem; }
+.auth-help a       { color: var(--cor-primaria); text-decoration: none; font-weight: 600; }
+.auth-help a:hover { text-decoration: underline; }
 .auth-switch       { text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--cor-borda); }
 .auth-switch p     { color: var(--cor-texto-suave); font-size: 0.875rem; margin-bottom: 0.7rem; }
 
